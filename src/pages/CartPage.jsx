@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.js";
+import { CartContext } from "../context/CartContext.js";
 import Button from "../components/Button.jsx";
 
 // 장바구니(/cart) — 「주문하기」를 누르면 Firestore의 users/{내 uid}/orders에 주문 문서를 더합니다
-function CartPage({ cart, user, onRemove, onClear }) {
+function CartPage({ user }) {
+  const { cart, removeFromCart, clearCart } = useContext(CartContext);
   const [message, setMessage] = useState("");
   const total = cart.reduce((sum, menu) => sum + menu.price, 0);
 
@@ -16,7 +18,7 @@ function CartPage({ cart, user, onRemove, onClear }) {
       createdAt: serverTimestamp(),
     })
       .then(() => {
-        onClear(); // 주문했으면 장바구니를 비움
+        clearCart(); // 주문했으면 장바구니를 비움
         setMessage("주문했어요. 내 주문에서 볼 수 있어요.");
       })
       .catch((error) => setMessage(error.code));
@@ -41,7 +43,7 @@ function CartPage({ cart, user, onRemove, onClear }) {
             <span>
               {menu.name} {menu.price}원
             </span>
-            <Button variant="outline" onClick={() => onRemove(index)}>
+            <Button variant="outline" onClick={() => removeFromCart(index)}>
               빼기
             </Button>
           </li>
