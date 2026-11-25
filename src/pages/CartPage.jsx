@@ -1,15 +1,17 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.js";
-import { CartContext } from "../context/CartContext.js";
+import { selectCartTotal, useCartStore } from "../stores/cartStore.js";
 import Button from "../components/Button.jsx";
 
 // 장바구니(/cart) — 「주문하기」를 누르면 Firestore의 users/{내 uid}/orders에 주문 문서를 더합니다
 function CartPage({ user }) {
-  const { cart, removeFromCart, clearCart } = useContext(CartContext);
+  const cart = useCartStore((state) => state.cart);
+  const total = useCartStore(selectCartTotal);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const clearCart = useCartStore((state) => state.TODO 6);
   const [message, setMessage] = useState("");
-  const total = cart.reduce((sum, menu) => sum + menu.price, 0);
 
   function handleOrder() {
     addDoc(collection(db, "users", user.uid, "orders"), {
